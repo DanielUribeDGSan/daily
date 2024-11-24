@@ -44,10 +44,13 @@ import useUser from "firebase-local/hooks/useUser";
 
 import Timer from "./components/Timer";
 import usePreguntas from "firebase-local/hooks/useQuestions";
+import useUtilidades from "firebase-local/hooks/useUtilidades";
 
 export default function Questions() {
   // Chakra Color Mode
   const { loading } = useUser();
+  const { utilidades } = useUtilidades();
+
   const { preguntaActiva } = usePreguntas();
 
   if (loading) {
@@ -80,21 +83,23 @@ export default function Questions() {
           gridArea={{ xl: "1 / 1 / 2 / 3", "2xl": "1 / 1 / 2 / 2" }}
         >
           <Grid
-            templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}
+            templateColumns={{ base: "1fr", md: "repeat(1, 1fr)" }}
             gap="20px"
             mb="20px"
           >
-            <Card
-              px="0px"
-              mb="20px"
-              maxWidth={{ xl: "100%", sm: "100%" }}
-              flex={1}
-            >
-              {preguntaActiva && (
-                <FormQuestions idQuestion={preguntaActiva.id} />
-              )}
-            </Card>
             {preguntaActiva && <Timer idQuestion={preguntaActiva.id} />}
+            {utilidades?.comenzarJuego && (
+              <Card
+                px="0px"
+                mb="20px"
+                maxWidth={{ xl: "100%", sm: "100%" }}
+                flex={1}
+              >
+                {preguntaActiva && (
+                  <FormQuestions idQuestion={preguntaActiva.id} />
+                )}
+              </Card>
+            )}
 
             <SimpleGrid columns={{ base: 1, md: 1 }} gap="20px">
               {preguntaActiva && (

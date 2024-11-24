@@ -64,12 +64,12 @@ export default function Marketplace() {
           gridArea={{ xl: "1 / 1 / 2 / 3", "2xl": "1 / 1 / 2 / 2" }}
         >
           <Grid
-            templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}
+            templateColumns={{ base: "1fr", md: "repeat(1, 1fr)" }}
             gap="20px"
             mb="20px"
           >
-            <Banner />
             {preguntaActiva && <Timer idQuestion={preguntaActiva.id} />}
+            <Banner />
 
             <SimpleGrid columns={{ base: 1, md: 1 }} gap="20px">
               {preguntaActiva && (

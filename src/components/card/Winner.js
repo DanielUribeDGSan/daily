@@ -32,7 +32,7 @@ export default function Winner(props) {
   if (respuestas.length < 2) return <></>;
 
   return (
-    <Card p="20px" mb="20px" minWidth={{ xl: "100%", sm: "100%" }}>
+    <Card p="20px" mb="20px" maxWidth={{ xl: "50%", sm: "100%" }}>
       <Flex direction={{ base: "column" }} justify="center">
         <Box mb={{ base: "20px", "2xl": "20px" }} position="relative">
           <Box flex={1} align="center" justify="center">

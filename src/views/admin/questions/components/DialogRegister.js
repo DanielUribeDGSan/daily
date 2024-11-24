@@ -66,6 +66,7 @@ function AlertDialogExample() {
           puntos: 0,
           type: "jugador",
           daily: false,
+          time: 0,
           // Puedes añadir más campos si los necesitas
         }
       );

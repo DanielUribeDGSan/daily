@@ -23,7 +23,7 @@ const FormQuestions = ({ idQuestion }) => {
   const { preguntaActiva } = usePreguntas();
   const { registrarRespuesta, respuestas } = useRespuestas(idQuestion);
   const toast = useToast();
-  const { user, loading } = useUser();
+  const { user, loading, updating, updateUser } = useUser();
   const [loadingResponse, setLoadingResponse] = useState(false);
 
   const time = getTiempoTranscurrido();
@@ -60,6 +60,8 @@ const FormQuestions = ({ idQuestion }) => {
       nombreUsuario: user?.nombre,
       idUsuario: user?.id,
     };
+
+    await updateUser({ ...user, time: user?.time + time });
 
     await registrarRespuesta(respuestaData);
 
@@ -122,7 +124,7 @@ const FormQuestions = ({ idQuestion }) => {
         me="38px"
         marginTop={5}
         onClick={handleSubmit}
-        // isDisabled={!selectedAnswer || time <= 0 || filterResponses.length > 0}
+        isDisabled={!selectedAnswer || time <= 0 || filterResponses.length > 0}
         isLoading={loadingResponse}
       >
         Responder

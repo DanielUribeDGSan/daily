@@ -22,6 +22,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import useUser from "firebase-local/hooks/useUser";
 import * as React from "react";
 
 const columnHelper = createColumnHelper();
@@ -32,6 +33,8 @@ export default function TopCreatorTable(props) {
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const textColorSecondary = useColorModeValue("secondaryGray.600", "white");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");
+  const { allUsers, loadingUsers } = useUser();
+
   let defaultData = tableData;
   const columns = [
     columnHelper.accessor("name", {
@@ -57,6 +60,24 @@ export default function TopCreatorTable(props) {
     }),
     columnHelper.accessor("artworks", {
       id: "artworks",
+      header: () => (
+        <Text
+          justifyContent="space-between"
+          align="center"
+          fontSize={{ sm: "10px", lg: "12px" }}
+          color="gray.400"
+        >
+          Puntos
+        </Text>
+      ),
+      cell: (info) => (
+        <Text color={textColorSecondary} fontSize="sm" fontWeight="500">
+          {info.getValue()}
+        </Text>
+      ),
+    }),
+    columnHelper.accessor("time", {
+      id: "time",
       header: () => (
         <Text
           justifyContent="space-between"
