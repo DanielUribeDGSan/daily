@@ -27,7 +27,11 @@ const FormQuestions = ({ idQuestion }) => {
   const toast = useToast();
   const { user, loading, updating, updateUser } = useUser();
   const [loadingResponse, setLoadingResponse] = useState(false);
-  const { activeUsers, loading: loadingActiveUser } = useActiveUsers();
+  const {
+    activeUsers,
+    loading: loadingActiveUser,
+    isUserActive,
+  } = useActiveUsers();
 
   const time = getTiempoTranscurrido();
 
@@ -42,6 +46,24 @@ const FormQuestions = ({ idQuestion }) => {
       respuesta: preguntaActiva?.respuestas[parseInt(index)].respuesta,
     });
   };
+
+  const checkUserAccess = () => {
+    if (!user?.id) return false;
+    const isActive = isUserActive(user.id);
+
+    // Log para debugging
+    console.log("User Access Check:", {
+      userId: user.id,
+      isActive,
+      activeUsersCount: activeUsers.length,
+    });
+
+    return isActive;
+  };
+
+  if (loading || loadingActiveUser) {
+    return <Spinner />;
+  }
 
   // Función para manejar el envío de la respuesta
   const handleSubmit = async () => {
@@ -92,13 +114,18 @@ const FormQuestions = ({ idQuestion }) => {
     (respuesta) => respuesta.idUsuario === user?.id
   );
 
-  const isActiveUser = activeUsers.some((user) => user.userId === user?.id);
-  console.log("isActiveUser", isActiveUser);
-
-  if (!isActiveUser)
+  if (!checkUserAccess()) {
     return (
-      <Text textAlign={"center"}>No estás participando en esta pregunta</Text>
+      <Box textAlign="center" p={4}>
+        <Text fontSize="lg" fontWeight="medium">
+          No estás participando en esta pregunta
+        </Text>
+        <Text fontSize="sm" color="gray.500" mt={2}>
+          Debes ser seleccionado para participar
+        </Text>
+      </Box>
     );
+  }
 
   return (
     <Box padding={5}>

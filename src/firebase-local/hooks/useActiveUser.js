@@ -25,32 +25,58 @@ const useActiveUsers = () => {
 
     const subscribeToActiveUsers = async () => {
       try {
+        // Crear la referencia a la colección
+        const activeUsersRef = collection(
+          db,
+          "col-sala/daily/col-usuarios-activos"
+        );
+
         unsubscribe = onSnapshot(
-          collection(db, "col-sala/daily/col-usuarios-activos"),
+          activeUsersRef,
           (snapshot) => {
-            const activeUsersData = snapshot.docs.map((doc) => ({
-              ...doc.data(),
-              id: doc.id,
-            }));
+            const activeUsersData = snapshot.docs.map((doc) => {
+              const data = doc.data();
+              return {
+                ...data,
+                id: doc.id,
+                userId: data.userId || doc.id, // Asegurarnos de tener siempre userId
+              };
+            });
+
+            // Log para debugging
+            console.log("Active Users Updated:", {
+              count: activeUsersData.length,
+              users: activeUsersData.map((user) => ({
+                id: user.id,
+                userId: user.userId,
+                nombre: user.nombre,
+              })),
+            });
+
             setActiveUsers(activeUsersData);
             setLoading(false);
           },
-          (err) => {
-            setError(err);
+          (error) => {
+            console.error("Error en la suscripción:", error);
+            setError(error);
             setLoading(false);
-            console.error("Error en la suscripción a usuarios activos:", err);
           }
         );
       } catch (err) {
+        console.error("Error al iniciar suscripción:", err);
         setError(err);
         setLoading(false);
-        console.error("Error al iniciar suscripción a usuarios activos:", err);
       }
     };
 
+    // Iniciar suscripción
     subscribeToActiveUsers();
 
-    return () => unsubscribe();
+    // Cleanup
+    return () => {
+      unsubscribe();
+      console.log("Subscription cleaned up");
+    };
   }, []);
 
   // Buscar un usuario activo por ID
@@ -180,6 +206,13 @@ const useActiveUsers = () => {
     }
   };
 
+  const isUserActive = (userId) => {
+    if (!userId || !activeUsers.length) return false;
+    return activeUsers.some(
+      (user) => user.userId === userId || user.id === userId
+    );
+  };
+
   return {
     activeUsers,
     loading,
@@ -189,6 +222,7 @@ const useActiveUsers = () => {
     registerActiveUser,
     removeActiveUser,
     removeAllActiveUsersAndMarkAsPlayed,
+    isUserActive, // Exportamos la función helper
   };
 };
 
