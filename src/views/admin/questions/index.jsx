@@ -27,7 +27,7 @@ import { useTimer } from "react-timer-hook";
 import { Box, Flex, Grid, SimpleGrid, Spinner } from "@chakra-ui/react";
 
 // Custom components
-import TableTopCreators from "views/admin/marketplace/components/TableTopCreators";
+import TableTopCreators from "views/admin/questions/components/TableTopCreators";
 import Winner from "components/card/Winner";
 import Card from "components/card/Card.js";
 

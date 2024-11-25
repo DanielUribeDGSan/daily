@@ -276,7 +276,8 @@ const usePreguntas = () => {
       // 1. Primero obtener todas las preguntas inactivas
       const q = query(
         collection(db, PREGUNTAS_PATH),
-        where("activa", "==", false)
+        where("activa", "==", false),
+        where("show", "==", false)
       );
 
       const querySnapshot = await getDocs(q);
@@ -302,7 +303,7 @@ const usePreguntas = () => {
       const preguntaActualRef = doc(db, PREGUNTAS_PATH, preguntaIdActual);
       batch.update(preguntaActualRef, {
         activa: false,
-        show: false,
+        show: true,
         jugadores: [], // Limpiar jugadores de la pregunta anterior
       });
 

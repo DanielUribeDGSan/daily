@@ -1,9 +1,7 @@
-/* eslint-disable */
-
 import {
   Avatar,
   Box,
-  Button,
+  Checkbox,
   Flex,
   Progress,
   Table,
@@ -14,6 +12,7 @@ import {
   Thead,
   Tr,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 import {
   createColumnHelper,
@@ -22,23 +21,99 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import useActiveUsers from "firebase-local/hooks/useActiveUser";
 import useUser from "firebase-local/hooks/useUser";
+
 import * as React from "react";
 
 const columnHelper = createColumnHelper();
 
-export default function TopCreatorTable(props) {
-  const { tableData } = props;
+const getInitials = (name) => {
+  if (!name) return "U";
+  const nameParts = name.trim().split(" ");
+  if (nameParts.length > 1) {
+    return (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
+  } else {
+    const singleName = nameParts[0];
+    return (singleName[0] + singleName[singleName.length - 1]).toUpperCase();
+  }
+};
+
+export default function TopCreatorTable() {
   const [sorting, setSorting] = React.useState([]);
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const textColorSecondary = useColorModeValue("secondaryGray.600", "white");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");
   const { allUsers, loadingUsers } = useUser();
+  const {
+    activeUsers,
+    registerActiveUser,
+    removeActiveUser,
+    loading: loadingActiveUsers,
+  } = useActiveUsers();
+  const toast = useToast();
 
-  let defaultData = tableData;
+  // Estado para manejar las selecciones
+  const [selectedUsers, setSelectedUsers] = React.useState({});
+
+  // Efecto para sincronizar el estado de selección con los usuarios activos
+  React.useEffect(() => {
+    if (activeUsers) {
+      const activeUsersMap = activeUsers.reduce((acc, user) => {
+        acc[user.userId] = true;
+        return acc;
+      }, {});
+      setSelectedUsers(activeUsersMap);
+    }
+  }, [activeUsers]);
+
+  // Manejador para el cambio de checkbox
+  const handleCheckboxChange = async (userId, userData) => {
+    try {
+      if (selectedUsers[userId]) {
+        // Si está seleccionado, lo removemos
+        await removeActiveUser(userId);
+        setSelectedUsers((prev) => ({ ...prev, [userId]: false }));
+        toast({
+          title: "Usuario removido",
+          description: "El usuario ya no está activo para jugar",
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        // Si no está seleccionado, lo agregamos
+        await registerActiveUser(userId, {
+          nombre: userData.nombre,
+          puntos: userData.puntos,
+          time: userData.time,
+        });
+        setSelectedUsers((prev) => ({ ...prev, [userId]: true }));
+        toast({
+          title: "Usuario activado",
+          description: "El usuario está listo para jugar",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar el estado del usuario",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   const columns = [
-    columnHelper.accessor("name", {
-      id: "name",
+    // Nueva columna para el checkbox
+
+    // Resto de las columnas...
+    columnHelper.accessor("nombre", {
+      id: "nombre",
       header: () => (
         <Text
           justifyContent="space-between"
@@ -49,17 +124,36 @@ export default function TopCreatorTable(props) {
           Nombre
         </Text>
       ),
-      cell: (info) => (
-        <Flex align="center">
-          <Avatar src={info.getValue()[1]} w="30px" h="30px" me="8px" />
-          <Text color={textColor} fontSize="sm" fontWeight="600">
-            {info.getValue()[0]}
-          </Text>
-        </Flex>
-      ),
+      cell: (info) => {
+        const nombre = info.getValue();
+        const initials = getInitials(nombre);
+        return (
+          <Flex align="center">
+            <Avatar
+              name={nombre}
+              src={""}
+              w="30px"
+              h="30px"
+              me="8px"
+              bg="navy.700"
+              color="white"
+              fontWeight="600"
+              fontSize={"10px"}
+              sx={{
+                "& .chakra-avatar__initials": {
+                  fontSize: "13px",
+                },
+              }}
+            />
+            <Text color={textColor} fontSize="sm" fontWeight="600">
+              {nombre}
+            </Text>
+          </Flex>
+        );
+      },
     }),
-    columnHelper.accessor("artworks", {
-      id: "artworks",
+    columnHelper.accessor("puntos", {
+      id: "puntos",
       header: () => (
         <Text
           justifyContent="space-between"
@@ -72,7 +166,7 @@ export default function TopCreatorTable(props) {
       ),
       cell: (info) => (
         <Text color={textColorSecondary} fontSize="sm" fontWeight="500">
-          {info.getValue()}
+          {info.getValue() || 0}
         </Text>
       ),
     }),
@@ -85,17 +179,17 @@ export default function TopCreatorTable(props) {
           fontSize={{ sm: "10px", lg: "12px" }}
           color="gray.400"
         >
-          Puntos
+          Tiempo
         </Text>
       ),
       cell: (info) => (
         <Text color={textColorSecondary} fontSize="sm" fontWeight="500">
-          {info.getValue()}
+          {info.getValue() || 0} seg
         </Text>
       ),
     }),
-    columnHelper.accessor("rating", {
-      id: "rating",
+    columnHelper.accessor("activo", {
+      id: "activo",
       header: () => (
         <Text
           justifyContent="space-between"
@@ -103,25 +197,47 @@ export default function TopCreatorTable(props) {
           fontSize={{ sm: "10px", lg: "12px" }}
           color="gray.400"
         >
-          Activo
+          Estado
         </Text>
       ),
-      cell: (info) => (
-        <Flex align="center">
-          <Progress
-            variant="table"
-            colorScheme="brandScheme"
-            h="8px"
-            w="108px"
-            value={info.getValue()}
-          />
-        </Flex>
-      ),
+      cell: (info) => {
+        const userId = info.row.original.id;
+        const isActive = selectedUsers[userId];
+        return (
+          <Flex align="center">
+            <Progress
+              variant="table"
+              colorScheme={isActive ? "green" : "gray"}
+              h="8px"
+              w="108px"
+              value={isActive ? 100 : 0}
+            />
+            <Text ml="2" color={textColorSecondary} fontSize="sm">
+              {isActive ? "Activo" : "Inactivo"}
+            </Text>
+          </Flex>
+        );
+      },
     }),
   ];
-  const [data, setData] = React.useState(() => [...defaultData]);
+
+  const tableData = React.useMemo(() => {
+    return allUsers
+      .filter((user) => user.type === "jugador")
+      .sort((a, b) => b.puntos - a.puntos)
+      .map((user) => ({
+        id: user.id, // Asegúrate de incluir el ID
+        nombre: user.nombre,
+        puntos: user.puntos,
+        time: user.time,
+        activo: user.activo,
+        photoURL: user.photoURL,
+        fechaCreacion: user.fechaCreacion,
+      }));
+  }, [allUsers]);
+
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     state: {
       sorting,
@@ -131,11 +247,21 @@ export default function TopCreatorTable(props) {
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
   });
+
+  if (loadingUsers || loadingActiveUsers) {
+    return (
+      <Flex justify="center" align="center" h="200px">
+        <Text>Cargando jugadores...</Text>
+      </Flex>
+    );
+  }
+
   return (
     <Flex
       direction="column"
       w="100%"
       overflowX={{ sm: "scroll", lg: "hidden" }}
+      minW={{ sm: "100%", md: "100%", xl: "650px" }}
     >
       <Flex
         align={{ sm: "flex-start", lg: "center" }}
@@ -147,7 +273,7 @@ export default function TopCreatorTable(props) {
         boxShadow="0px 40px 58px -20px rgba(112, 144, 176, 0.26)"
       >
         <Text color={textColor} fontSize="xl" fontWeight="600">
-          Jugadores
+          Jugadores ({tableData.length})
         </Text>
       </Flex>
       <Box>
@@ -176,8 +302,8 @@ export default function TopCreatorTable(props) {
                           header.getContext()
                         )}
                         {{
-                          asc: "",
-                          desc: "",
+                          asc: "↑",
+                          desc: "↓",
                         }[header.column.getIsSorted()] ?? null}
                       </Flex>
                     </Th>
@@ -187,30 +313,27 @@ export default function TopCreatorTable(props) {
             ))}
           </Thead>
           <Tbody>
-            {table
-              .getRowModel()
-              .rows.slice(0, 11)
-              .map((row) => {
-                return (
-                  <Tr key={row.id}>
-                    {row.getVisibleCells().map((cell) => {
-                      return (
-                        <Td
-                          key={cell.id}
-                          fontSize={{ sm: "14px" }}
-                          minW={{ sm: "150px", md: "200px", lg: "auto" }}
-                          borderColor="transparent"
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </Td>
-                      );
-                    })}
-                  </Tr>
-                );
-              })}
+            {table.getRowModel().rows.map((row) => {
+              return (
+                <Tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <Td
+                        key={cell.id}
+                        fontSize={{ sm: "14px" }}
+                        minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                        borderColor="transparent"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </Td>
+                    );
+                  })}
+                </Tr>
+              );
+            })}
           </Tbody>
         </Table>
       </Box>

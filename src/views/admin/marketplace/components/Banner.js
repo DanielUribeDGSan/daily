@@ -1,26 +1,82 @@
-import React from "react";
+import React, { useState } from "react";
 
 // Chakra imports
-import { Box, Button, Flex, Link, Spinner, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Icon,
+  Link,
+  Spinner,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 
 // Assets
 import useUtilidades from "firebase-local/hooks/useUtilidades";
 import usePreguntas from "firebase-local/hooks/useQuestions";
+import useQuestionsCounter from "firebase-local/hooks/useQuesrionsGame";
+import useActiveUsers from "firebase-local/hooks/useActiveUser";
+import { GrPowerReset } from "react-icons/gr";
 
 export default function Banner() {
   const { actualizarEstadoJuego, actualizarTimer, utilidades } =
     useUtilidades();
   const { preguntaActiva, cambiarPreguntaActiva } = usePreguntas();
+  const { getCurrentCount, incrementCounter, resetCounter, counter } =
+    useQuestionsCounter();
+  const [loading, setLoading] = useState();
+  const [loadingReset, setLoadingReset] = useState();
+  const { removeAllActiveUsersAndMarkAsPlayed, activeUsers } = useActiveUsers();
+
+  const toast = useToast();
+
   // Chakra Color Mode
 
-  const handleClick = () => {
-    actualizarTimer(!utilidades?.timerActivo);
+  const handleClickReset = async () => {
+    setLoadingReset(true);
+    await resetCounter();
+    await removeAllActiveUsersAndMarkAsPlayed();
+    await actualizarEstadoJuego(false);
+    setLoadingReset(false);
+  };
+
+  const handleClick = async () => {
+    console.log("activeUsers", activeUsers);
+
+    if (activeUsers?.length <= 1) {
+      console.log("entro");
+
+      toast({
+        title: "No hay usuarios activos",
+        description: "Necesitas añadir al menos dos usuarios para jugar",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+    setLoading(true);
+    const getCurrentCountData = await getCurrentCount();
+
+    if (getCurrentCountData === 3) {
+      await resetCounter();
+      await removeAllActiveUsersAndMarkAsPlayed();
+      await actualizarEstadoJuego(false);
+      setLoading(false);
+      return;
+    }
+
+    await actualizarTimer(!utilidades?.timerActivo);
+
     if (!utilidades?.comenzarJuego) {
-      actualizarEstadoJuego(!utilidades?.comenzarJuego);
+      await actualizarEstadoJuego(!utilidades?.comenzarJuego);
     } else {
       if (!preguntaActiva) return;
-      cambiarPreguntaActiva(preguntaActiva?.id);
+      await cambiarPreguntaActiva(preguntaActiva?.id);
+      await incrementCounter();
     }
+    setLoading(false);
   };
 
   return (
@@ -32,7 +88,27 @@ export default function Banner() {
       py={{ base: "30px", md: "56px" }}
       px={{ base: "30px", md: "64px" }}
       borderRadius="30px"
+      position={"relative"}
     >
+      <Box flex={1} align="end" justify="end">
+        <Button
+          bg="white"
+          color="black"
+          _hover={{ bg: "whiteAlpha.900" }}
+          _active={{ bg: "white" }}
+          _focus={{ bg: "white" }}
+          fontWeight="500"
+          fontSize="14px"
+          p={2}
+          onClick={handleClickReset}
+          isLoading={loadingReset}
+          position={"absolute"}
+          top={2}
+          right={2}
+        >
+          <Icon as={GrPowerReset} width="20px" height="20px" color="inherit" />
+        </Button>
+      </Box>
       {!preguntaActiva && utilidades?.comenzarJuego && (
         <Box flex={1} align="center" justify="center">
           <Spinner
@@ -44,6 +120,7 @@ export default function Banner() {
           />
         </Box>
       )}
+
       <Text
         fontSize={{ base: "24px", md: "34px" }}
         color="white"
@@ -77,8 +154,13 @@ export default function Banner() {
           px="27"
           me="38px"
           onClick={handleClick}
+          isLoading={loading}
         >
-          {!utilidades?.comenzarJuego ? "Empezar juego" : "Continuar juego"}
+          {!utilidades?.comenzarJuego
+            ? "Empezar juego"
+            : counter === 3
+            ? "Reiniciar juego"
+            : "Siguiente pregunta"}
         </Button>
       </Flex>
     </Flex>

@@ -1,5 +1,6 @@
 export const preguntas = [
   {
+    contestada: false,
     pregunta: "¿En qué año se lanzó el primer iPhone?",
     respuestas: [
       { respuesta: "2005", correcta: false },
@@ -9,6 +10,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el país más pequeño del mundo?",
     respuestas: [
       { respuesta: "Mónaco", correcta: false },
@@ -18,6 +20,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Quién compuso la Novena Sinfonía?",
     respuestas: [
       { respuesta: "Wolfgang Amadeus Mozart", correcta: false },
@@ -27,6 +30,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el metal más caro del mundo?",
     respuestas: [
       { respuesta: "Oro", correcta: false },
@@ -36,6 +40,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Qué famoso científico desarrolló la teoría de la evolución?",
     respuestas: [
       { respuesta: "Charles Darwin", correcta: true },
@@ -45,6 +50,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es la moneda oficial de Japón?",
     respuestas: [
       { respuesta: "Won", correcta: false },
@@ -54,6 +60,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿En qué año terminó la Primera Guerra Mundial?",
     respuestas: [
       { respuesta: "1917", correcta: false },
@@ -63,6 +70,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el único mamífero que puede volar?",
     respuestas: [
       { respuesta: "Ardilla voladora", correcta: false },
@@ -72,6 +80,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Quién escribió 'Romeo y Julieta'?",
     respuestas: [
       { respuesta: "Charles Dickens", correcta: false },
@@ -82,6 +91,7 @@ export const preguntas = [
   },
   // Nuevas preguntas
   {
+    contestada: false,
     pregunta: "¿Cuál es el planeta más grande del sistema solar?",
     respuestas: [
       { respuesta: "Saturno", correcta: false },
@@ -91,6 +101,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el hueso más largo del cuerpo humano?",
     respuestas: [
       { respuesta: "Fémur", correcta: true },
@@ -100,6 +111,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿En qué año cayó el Muro de Berlín?",
     respuestas: [
       { respuesta: "1987", correcta: false },
@@ -109,6 +121,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es la capital de Australia?",
     respuestas: [
       { respuesta: "Sídney", correcta: false },
@@ -118,6 +131,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Qué elemento químico tiene el símbolo 'Fe'?",
     respuestas: [
       { respuesta: "Fósforo", correcta: false },
@@ -127,6 +141,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Quién pintó 'La noche estrellada'?",
     respuestas: [
       { respuesta: "Pablo Picasso", correcta: false },
@@ -136,6 +151,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el río más largo del mundo?",
     respuestas: [
       { respuesta: "Nilo", correcta: false },
@@ -145,6 +161,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿En qué año se descubrió América?",
     respuestas: [
       { respuesta: "1490", correcta: false },
@@ -154,6 +171,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es la velocidad de la luz?",
     respuestas: [
       { respuesta: "299,792 km/s", correcta: true },
@@ -163,6 +181,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Quién inventó la bombilla eléctrica?",
     respuestas: [
       { respuesta: "Nikola Tesla", correcta: false },
@@ -172,6 +191,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el océano más grande?",
     respuestas: [
       { respuesta: "Atlántico", correcta: false },
@@ -181,6 +201,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuántos huesos tiene el cuerpo humano adulto?",
     respuestas: [
       { respuesta: "186", correcta: false },
@@ -190,6 +211,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿En qué año comenzó la Segunda Guerra Mundial?",
     respuestas: [
       { respuesta: "1938", correcta: false },
@@ -199,6 +221,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el elemento más abundante en el universo?",
     respuestas: [
       { respuesta: "Helio", correcta: false },
@@ -208,6 +231,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Quién pintó la Mona Lisa?",
     respuestas: [
       { respuesta: "Miguel Ángel", correcta: false },
@@ -217,6 +241,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el animal terrestre más rápido?",
     respuestas: [
       { respuesta: "León", correcta: false },
@@ -226,6 +251,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿En qué año se fundó la ONU?",
     respuestas: [
       { respuesta: "1944", correcta: false },
@@ -235,6 +261,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es la montaña más alta del mundo?",
     respuestas: [
       { respuesta: "K2", correcta: false },
@@ -244,6 +271,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Quién fue el primer hombre en pisar la Luna?",
     respuestas: [
       { respuesta: "Buzz Aldrin", correcta: false },
@@ -253,6 +281,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el animal más grande del mundo?",
     respuestas: [
       { respuesta: "Elefante africano", correcta: false },
@@ -262,6 +291,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿En qué año se inventó Internet?",
     respuestas: [
       { respuesta: "1969", correcta: true },
@@ -271,6 +301,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el desierto más grande del mundo?",
     respuestas: [
       { respuesta: "Gobi", correcta: false },
@@ -280,6 +311,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Quién escribió 'Don Quijote de la Mancha'?",
     respuestas: [
       { respuesta: "Lope de Vega", correcta: false },
@@ -289,6 +321,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el elemento más pesado de la tabla periódica?",
     respuestas: [
       { respuesta: "Uranio", correcta: false },
@@ -308,6 +341,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es la capital de Canadá?",
     respuestas: [
       { respuesta: "Toronto", correcta: false },
@@ -317,6 +351,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Quién fue el primer presidente de Estados Unidos?",
     respuestas: [
       { respuesta: "Thomas Jefferson", correcta: false },
@@ -326,6 +361,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el idioma más hablado del mundo?",
     respuestas: [
       { respuesta: "Inglés", correcta: false },
@@ -335,6 +371,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el símbolo químico del oro?",
     respuestas: [
       { respuesta: "Ag", correcta: false },
@@ -344,6 +381,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es la obra más famosa de Gabriel García Márquez?",
     respuestas: [
       { respuesta: "El amor en los tiempos del cólera", correcta: false },
@@ -353,6 +391,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿En qué año se fundó Microsoft?",
     respuestas: [
       { respuesta: "1974", correcta: false },
@@ -362,6 +401,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es la capital de Marruecos?",
     respuestas: [
       { respuesta: "Casablanca", correcta: false },
@@ -371,6 +411,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Qué civilización construyó Machu Picchu?",
     respuestas: [
       { respuesta: "Mayas", correcta: false },
@@ -390,6 +431,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Quién fue el primer ser vivo en orbitar la Tierra?",
     respuestas: [
       { respuesta: "Yuri Gagarin", correcta: false },
@@ -399,6 +441,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿En qué año se llevó a cabo la Revolución Francesa?",
     respuestas: [
       { respuesta: "1787", correcta: false },
@@ -408,6 +451,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el instrumento musical más antiguo del mundo?",
     respuestas: [
       { respuesta: "Tambor", correcta: false },
@@ -417,6 +461,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es la galaxia más cercana a la Vía Láctea?",
     respuestas: [
       { respuesta: "Andrómeda", correcta: false },
@@ -426,6 +471,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Quién inventó el teléfono?",
     respuestas: [
       { respuesta: "Thomas Edison", correcta: false },
@@ -445,6 +491,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Qué famoso físico propuso la teoría de los agujeros negros?",
     respuestas: [
       { respuesta: "Albert Einstein", correcta: false },
@@ -454,6 +501,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es la capital de Nueva Zelanda?",
     respuestas: [
       { respuesta: "Auckland", correcta: false },
@@ -463,6 +511,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿En qué año se completó la primera vuelta al mundo?",
     respuestas: [
       { respuesta: "1519", correcta: false },
@@ -472,6 +521,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el compositor de 'Las Cuatro Estaciones'?",
     respuestas: [
       { respuesta: "Johann Sebastian Bach", correcta: false },
@@ -491,6 +541,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Quién fue el primer emperador de China?",
     respuestas: [
       { respuesta: "Sun Yat-sen", correcta: false },
@@ -500,6 +551,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es el ave más grande que no puede volar?",
     respuestas: [
       { respuesta: "Emú", correcta: false },
@@ -509,6 +561,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál fue la primera película de Disney?",
     respuestas: [
       { respuesta: "Pinocho", correcta: false },
@@ -518,6 +571,7 @@ export const preguntas = [
     ],
   },
   {
+    contestada: false,
     pregunta: "¿Cuál es la hormona del estrés?",
     respuestas: [
       { respuesta: "Adrenalina", correcta: false },

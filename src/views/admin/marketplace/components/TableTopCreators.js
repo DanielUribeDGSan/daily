@@ -1,8 +1,7 @@
-/* eslint-disable */
 import {
   Avatar,
   Box,
-  Button,
+  Checkbox,
   Flex,
   Progress,
   Table,
@@ -13,6 +12,7 @@ import {
   Thead,
   Tr,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 import {
   createColumnHelper,
@@ -21,22 +21,19 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import useActiveUsers from "firebase-local/hooks/useActiveUser";
 import useUser from "firebase-local/hooks/useUser";
+
 import * as React from "react";
 
 const columnHelper = createColumnHelper();
 
-// Función para obtener las iniciales según las reglas especificadas
 const getInitials = (name) => {
   if (!name) return "U";
-
   const nameParts = name.trim().split(" ");
-
   if (nameParts.length > 1) {
-    // Si hay nombre y apellido, tomar la primera letra de cada uno
     return (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
   } else {
-    // Si solo hay un nombre, tomar la primera y última letra
     const singleName = nameParts[0];
     return (singleName[0] + singleName[singleName.length - 1]).toUpperCase();
   }
@@ -48,8 +45,91 @@ export default function TopCreatorTable() {
   const textColorSecondary = useColorModeValue("secondaryGray.600", "white");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");
   const { allUsers, loadingUsers } = useUser();
+  const {
+    activeUsers,
+    registerActiveUser,
+    removeActiveUser,
+    loading: loadingActiveUsers,
+  } = useActiveUsers();
+  const toast = useToast();
+
+  // Estado para manejar las selecciones
+  const [selectedUsers, setSelectedUsers] = React.useState({});
+
+  // Efecto para sincronizar el estado de selección con los usuarios activos
+  React.useEffect(() => {
+    if (activeUsers) {
+      const activeUsersMap = activeUsers.reduce((acc, user) => {
+        acc[user.userId] = true;
+        return acc;
+      }, {});
+      setSelectedUsers(activeUsersMap);
+    }
+  }, [activeUsers]);
+
+  // Manejador para el cambio de checkbox
+  const handleCheckboxChange = async (userId, userData) => {
+    try {
+      if (selectedUsers[userId]) {
+        // Si está seleccionado, lo removemos
+        await removeActiveUser(userId);
+        setSelectedUsers((prev) => ({ ...prev, [userId]: false }));
+        toast({
+          title: "Usuario removido",
+          description: "El usuario ya no está activo para jugar",
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        // Si no está seleccionado, lo agregamos
+        await registerActiveUser(userId, {
+          nombre: userData.nombre,
+          puntos: userData.puntos,
+          time: userData.time,
+        });
+        setSelectedUsers((prev) => ({ ...prev, [userId]: true }));
+        toast({
+          title: "Usuario activado",
+          description: "El usuario está listo para jugar",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar el estado del usuario",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   const columns = [
+    // Nueva columna para el checkbox
+    columnHelper.accessor("id", {
+      id: "selection",
+      header: () => (
+        <Text fontSize={{ sm: "10px", lg: "12px" }} color="gray.400">
+          Activar
+        </Text>
+      ),
+      cell: (info) => {
+        const userId = info.getValue();
+        return (
+          <Checkbox
+            isChecked={selectedUsers[userId] || false}
+            onChange={() => handleCheckboxChange(userId, info.row.original)}
+            colorScheme="green"
+            isDisabled={loadingActiveUsers}
+          />
+        );
+      },
+    }),
+    // Resto de las columnas...
     columnHelper.accessor("nombre", {
       id: "nombre",
       header: () => (
@@ -83,7 +163,6 @@ export default function TopCreatorTable() {
                 },
               }}
             />
-
             <Text color={textColor} fontSize="sm" fontWeight="600">
               {nombre}
             </Text>
@@ -140,18 +219,19 @@ export default function TopCreatorTable() {
         </Text>
       ),
       cell: (info) => {
-        const activo = info.getValue();
+        const userId = info.row.original.id;
+        const isActive = selectedUsers[userId];
         return (
           <Flex align="center">
             <Progress
               variant="table"
-              colorScheme={activo ? "green" : "gray"}
+              colorScheme={isActive ? "green" : "gray"}
               h="8px"
               w="108px"
-              value={activo ? 100 : 0}
+              value={isActive ? 100 : 0}
             />
             <Text ml="2" color={textColorSecondary} fontSize="sm">
-              {activo ? "Activo" : "Inactivo"}
+              {isActive ? "Activo" : "Inactivo"}
             </Text>
           </Flex>
         );
@@ -159,12 +239,12 @@ export default function TopCreatorTable() {
     }),
   ];
 
-  // Filtrar usuarios que son de tipo "jugador"
   const tableData = React.useMemo(() => {
     return allUsers
       .filter((user) => user.type === "jugador")
       .sort((a, b) => b.puntos - a.puntos)
       .map((user) => ({
+        id: user.id, // Asegúrate de incluir el ID
         nombre: user.nombre,
         puntos: user.puntos,
         time: user.time,
@@ -186,7 +266,7 @@ export default function TopCreatorTable() {
     debugTable: true,
   });
 
-  if (loadingUsers) {
+  if (loadingUsers || loadingActiveUsers) {
     return (
       <Flex justify="center" align="center" h="200px">
         <Text>Cargando jugadores...</Text>
@@ -199,6 +279,7 @@ export default function TopCreatorTable() {
       direction="column"
       w="100%"
       overflowX={{ sm: "scroll", lg: "hidden" }}
+      minW={{ sm: "100%", md: "100%", xl: "650px" }}
     >
       <Flex
         align={{ sm: "flex-start", lg: "center" }}

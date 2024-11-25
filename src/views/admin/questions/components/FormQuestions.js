@@ -14,6 +14,8 @@ import useGameTimer from "firebase-local/hooks/useGameTimer";
 import usePreguntas from "firebase-local/hooks/useQuestions";
 import useRespuestas from "firebase-local/hooks/useResponses";
 import useUser from "firebase-local/hooks/useUser";
+import useActiveUsers from "firebase-local/hooks/useActiveUser";
+import useQuestionsCounter from "firebase-local/hooks/useQuesrionsGame";
 
 const FormQuestions = ({ idQuestion }) => {
   // Estado para la respuesta seleccionada
@@ -25,6 +27,7 @@ const FormQuestions = ({ idQuestion }) => {
   const toast = useToast();
   const { user, loading, updating, updateUser } = useUser();
   const [loadingResponse, setLoadingResponse] = useState(false);
+  const { activeUsers, loading: loadingActiveUser } = useActiveUsers();
 
   const time = getTiempoTranscurrido();
 
@@ -60,8 +63,8 @@ const FormQuestions = ({ idQuestion }) => {
       nombreUsuario: user?.nombre,
       idUsuario: user?.id,
     };
-
-    await updateUser({ ...user, time: user?.time + time });
+    const points = selectedAnswer.isCorrect ? user?.puntos + 1 : user?.puntos;
+    await updateUser({ ...user, time: user?.time + time, puntos: points });
 
     await registrarRespuesta(respuestaData);
 
@@ -83,11 +86,19 @@ const FormQuestions = ({ idQuestion }) => {
     setSelectedAnswer(null);
   };
 
-  if (loading) return <Spinner />;
+  if (loading || loadingActiveUser) return <Spinner />;
 
   const filterResponses = respuestas.filter(
     (respuesta) => respuesta.idUsuario === user?.id
   );
+
+  const isActiveUser = activeUsers.some((user) => user.userId === user?.id);
+  console.log("isActiveUser", isActiveUser);
+
+  if (!isActiveUser)
+    return (
+      <Text textAlign={"center"}>No estás participando en esta pregunta</Text>
+    );
 
   return (
     <Box padding={5}>
@@ -111,24 +122,28 @@ const FormQuestions = ({ idQuestion }) => {
         </Stack>
       </RadioGroup>
       {/* {isRunning && ( */}
-      <Button
-        bg="blackAlpha.100"
-        color="black"
-        _hover={{ bg: "blackAlpha.300" }}
-        _active={{ bg: "blackAlpha.100" }}
-        _focus={{ bg: "blackAlpha.100" }}
-        fontWeight="500"
-        fontSize="14px"
-        py="20px"
-        px="27"
-        me="38px"
-        marginTop={5}
-        onClick={handleSubmit}
-        isDisabled={!selectedAnswer || time <= 0 || filterResponses.length > 0}
-        isLoading={loadingResponse}
-      >
-        Responder
-      </Button>
+      {filterResponses.length === 0 && (
+        <Button
+          bg="blackAlpha.100"
+          color="black"
+          _hover={{ bg: "blackAlpha.300" }}
+          _active={{ bg: "blackAlpha.100" }}
+          _focus={{ bg: "blackAlpha.100" }}
+          fontWeight="500"
+          fontSize="14px"
+          py="20px"
+          px="27"
+          me="38px"
+          marginTop={5}
+          onClick={handleSubmit}
+          isDisabled={
+            !selectedAnswer || time <= 0 || filterResponses.length > 0
+          }
+          isLoading={loadingResponse}
+        >
+          Responder
+        </Button>
+      )}
       {/* )} */}
     </Box>
   );

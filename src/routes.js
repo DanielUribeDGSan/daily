@@ -24,17 +24,18 @@ const routes = [
   {
     name: "",
     layout: "/admin",
-    path: "/board",
-    icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
-    component: <NFTMarketplace />,
-  },
-  {
-    name: "",
-    layout: "/admin",
     path: "/questions",
     icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
     component: <Questions />,
   },
+  {
+    name: "",
+    layout: "/admin",
+    path: "/board",
+    icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
+    component: <NFTMarketplace />,
+  },
+
   {
     name: "NFT Marketplace",
     layout: "/admin",

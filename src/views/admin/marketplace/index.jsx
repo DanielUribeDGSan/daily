@@ -42,6 +42,7 @@ import { tableColumnsTopCreators } from "views/admin/marketplace/variables/table
 import useUtilidades from "firebase-local/hooks/useUtilidades";
 import Timer from "../questions/components/Timer";
 import usePreguntas from "firebase-local/hooks/useQuestions";
+import RegistrarPreguntas from "./components/registrarPreguntas";
 
 export default function Marketplace() {
   const { utilidades } = useUtilidades();
@@ -52,6 +53,7 @@ export default function Marketplace() {
   return (
     <Box pt={{ base: "90px", md: "80px", xl: "80px" }} flex={1}>
       {/* Main Fields */}
+      {/* <RegistrarPreguntas /> */}
 
       <Grid
         mb="20px"

@@ -16,9 +16,11 @@ import useRespuestas from "firebase-local/hooks/useResponses";
 
 import gifIncorrect from "assets/img/gifs/incorrect.png";
 import gifCorrect from "assets/img/gifs/accept.png";
+import useUtilidades from "firebase-local/hooks/useUtilidades";
 
 export default function Winner(props) {
   const { bidders, idQuestion } = props;
+  const { utilidades } = useUtilidades();
 
   const { respuestas } = useRespuestas(idQuestion);
 
@@ -30,6 +32,10 @@ export default function Winner(props) {
   const textColorBid = useColorModeValue("brand.500", "white");
 
   if (respuestas.length < 2) return <></>;
+
+  if (!utilidades?.comenzarJuego) return <></>;
+
+  console.log("respuestas", respuestas);
 
   return (
     <Card p="20px" mb="20px" maxWidth={{ xl: "50%", sm: "100%" }}>

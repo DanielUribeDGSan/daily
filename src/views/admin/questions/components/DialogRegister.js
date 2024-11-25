@@ -62,11 +62,12 @@ function AlertDialogExample() {
         {
           nombre: nombre,
           fechaCreacion: new Date(),
-          activo: true,
+          activo: false,
           puntos: 0,
           type: "jugador",
           daily: false,
           time: 0,
+          alreadyPlayed: false,
           // Puedes añadir más campos si los necesitas
         }
       );
