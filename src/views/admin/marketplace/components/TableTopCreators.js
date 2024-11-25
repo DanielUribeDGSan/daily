@@ -120,6 +120,8 @@ export default function TopCreatorTable() {
       ),
       cell: (info) => {
         const userId = info.getValue();
+        const alreadyPlayed = info.row.original.alreadyPlayed;
+        if (alreadyPlayed) return <></>;
         return (
           <Checkbox
             isChecked={selectedUsers[userId] || false}
@@ -146,8 +148,15 @@ export default function TopCreatorTable() {
       cell: (info) => {
         const nombre = info.getValue();
         const initials = getInitials(nombre);
+        const alreadyPlayed = info.row.original.alreadyPlayed;
+
         return (
-          <Flex align="center">
+          <Flex
+            align="center"
+            p={1}
+            borderRadius={10}
+            bg={alreadyPlayed ? "gray.400" : ""}
+          >
             <Avatar
               name={nombre}
               src={""}
@@ -164,7 +173,12 @@ export default function TopCreatorTable() {
                 },
               }}
             />
-            <Text color={textColor} fontSize="sm" fontWeight="600">
+            <Text
+              color={textColor}
+              fontSize="sm"
+              fontWeight="600"
+              textDecoration={alreadyPlayed ? "line-through" : ""}
+            >
               {nombre}
             </Text>
           </Flex>
@@ -252,6 +266,7 @@ export default function TopCreatorTable() {
         activo: user.activo,
         photoURL: user.photoURL,
         fechaCreacion: user.fechaCreacion,
+        alreadyPlayed: user.alreadyPlayed,
       }));
   }, [allUsers]);
 
