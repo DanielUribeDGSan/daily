@@ -158,8 +158,6 @@ const useActiveUsers = () => {
         collection(db, "col-sala/daily/col-usuarios-activos")
       );
 
-      console.log("activeUsersSnapshot", activeUsersSnapshot);
-
       // 2. Para cada usuario activo:
       const updatePromises = activeUsersSnapshot.docs.map(
         async (docSnapshot) => {
@@ -206,6 +204,61 @@ const useActiveUsers = () => {
     }
   };
 
+  const removeAllActiveUsersAndMarkAsPlayedReset = async () => {
+    const batch = writeBatch(db);
+
+    try {
+      // 1. Obtener todos los usuarios activos
+      const activeUsersSnapshot = await getDocs(
+        collection(db, "col-sala/daily/col-usuarios-activos")
+      );
+
+      // 2. Para cada usuario activo:
+      const updatePromises = activeUsersSnapshot.docs.map(
+        async (docSnapshot) => {
+          const userData = docSnapshot.data();
+          const userId = userData.userId || docSnapshot.id;
+
+          // 2.1 Agregar la eliminación del documento de usuarios activos al batch
+          const activeUserRef = doc(
+            db,
+            "col-sala/daily/col-usuarios-activos",
+            docSnapshot.id
+          );
+          batch.delete(activeUserRef);
+
+          // 2.2 Actualizar el documento en col-usuarios
+          const userRef = doc(db, "col-sala/daily/col-usuarios", userId);
+          return updateDoc(userRef, {
+            alreadyPlayed: false,
+            lastPlayed: new Date().toISOString(),
+          });
+        }
+      );
+
+      // 3. Ejecutar todas las actualizaciones de col-usuarios
+      await Promise.all(updatePromises);
+
+      // 4. Commit del batch para eliminar todos los usuarios activos
+      await batch.commit();
+
+      return {
+        success: true,
+        usersProcessed: activeUsersSnapshot.size,
+      };
+    } catch (err) {
+      console.error(
+        "Error al eliminar usuarios activos y marcarlos como jugados:",
+        err
+      );
+      setError(err);
+      return {
+        success: false,
+        error: err.message,
+      };
+    }
+  };
+
   const isUserActive = (userId) => {
     if (!userId || !activeUsers.length) return false;
     return activeUsers.some(
@@ -223,6 +276,7 @@ const useActiveUsers = () => {
     removeActiveUser,
     removeAllActiveUsersAndMarkAsPlayed,
     isUserActive, // Exportamos la función helper
+    removeAllActiveUsersAndMarkAsPlayedReset,
   };
 };
 

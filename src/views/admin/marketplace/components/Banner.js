@@ -27,7 +27,11 @@ export default function Banner() {
     useQuestionsCounter();
   const [loading, setLoading] = useState();
   const [loadingReset, setLoadingReset] = useState();
-  const { removeAllActiveUsersAndMarkAsPlayed, activeUsers } = useActiveUsers();
+  const {
+    removeAllActiveUsersAndMarkAsPlayed,
+    activeUsers,
+    removeAllActiveUsersAndMarkAsPlayedReset,
+  } = useActiveUsers();
 
   const toast = useToast();
 
@@ -36,7 +40,7 @@ export default function Banner() {
   const handleClickReset = async () => {
     setLoadingReset(true);
     await resetCounter();
-    await removeAllActiveUsersAndMarkAsPlayed();
+    await removeAllActiveUsersAndMarkAsPlayedReset();
     await actualizarEstadoJuego(false);
     setLoadingReset(false);
   };
