@@ -25,6 +25,7 @@ import useActiveUsers from "firebase-local/hooks/useActiveUser";
 import useUser from "firebase-local/hooks/useUser";
 
 import * as React from "react";
+import AlertDialogJira from "./DialogJira";
 
 const columnHelper = createColumnHelper();
 
@@ -281,6 +282,7 @@ export default function TopCreatorTable() {
       overflowX={{ sm: "scroll", lg: "hidden" }}
       minW={{ sm: "100%", md: "100%", xl: "650px" }}
     >
+      <AlertDialogJira />
       <Flex
         align={{ sm: "flex-start", lg: "center" }}
         justify="space-between"
