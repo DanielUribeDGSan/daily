@@ -10,6 +10,7 @@ import {
   orderBy,
   deleteDoc,
   onSnapshot,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -197,6 +198,64 @@ const useRespuestas = (preguntaId) => {
       setLoading(false);
     }
   };
+  const limpiarRespuestas = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Obtener todas las respuestas
+      const respuestasRef = collection(db, RESPUESTAS_PATH);
+      const snapshot = await getDocs(respuestasRef);
+
+      if (snapshot.empty) {
+        console.log("No hay respuestas para eliminar");
+        return { success: true, deletedCount: 0 };
+      }
+
+      // Usar batch para eliminar en lotes de 500 (límite de Firestore)
+      const batchArray = [];
+      let batch = writeBatch(db);
+      let operationCount = 0;
+      let totalOperations = 0;
+
+      for (const doc of snapshot.docs) {
+        batch.delete(doc.ref);
+        operationCount++;
+        totalOperations++;
+
+        // Si llegamos a 500 operaciones, ejecutamos el batch y creamos uno nuevo
+        if (operationCount === 500) {
+          batchArray.push(batch);
+          batch = writeBatch(db);
+          operationCount = 0;
+        }
+      }
+
+      // Si quedan operaciones pendientes, agregamos el último batch
+      if (operationCount > 0) {
+        batchArray.push(batch);
+      }
+
+      // Ejecutar todos los batches
+      await Promise.all(batchArray.map((batch) => batch.commit()));
+
+      console.log(`Se eliminaron ${totalOperations} respuestas`);
+
+      return {
+        success: true,
+        deletedCount: totalOperations,
+      };
+    } catch (err) {
+      console.error("Error al limpiar respuestas:", err);
+      setError(err);
+      return {
+        success: false,
+        error: err.message,
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return {
     loading,
@@ -208,6 +267,7 @@ const useRespuestas = (preguntaId) => {
     eliminarRespuesta,
     verificarRespuestaUsuario,
     respuestas,
+    limpiarRespuestas,
   };
 };
 

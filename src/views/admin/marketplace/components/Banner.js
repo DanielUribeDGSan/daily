@@ -18,6 +18,8 @@ import usePreguntas from "firebase-local/hooks/useQuestions";
 import useQuestionsCounter from "firebase-local/hooks/useQuesrionsGame";
 import useActiveUsers from "firebase-local/hooks/useActiveUser";
 import { GrPowerReset } from "react-icons/gr";
+import useRespuestas from "firebase-local/hooks/useResponses";
+import useGameTimer from "firebase-local/hooks/useGameTimer";
 
 export default function Banner() {
   const { actualizarEstadoJuego, actualizarTimer, utilidades } =
@@ -32,6 +34,8 @@ export default function Banner() {
     activeUsers,
     removeAllActiveUsersAndMarkAsPlayedReset,
   } = useActiveUsers();
+  const { limpiarRespuestas } = useRespuestas();
+  const { minutes, seconds, isRunning, pause } = useGameTimer();
 
   const toast = useToast();
 
@@ -39,9 +43,13 @@ export default function Banner() {
 
   const handleClickReset = async () => {
     setLoadingReset(true);
+    await pause();
+    await actualizarTimer(false);
     await resetCounter();
+    await limpiarRespuestas();
     await removeAllActiveUsersAndMarkAsPlayedReset();
     await actualizarEstadoJuego(false);
+    await cambiarPreguntaActiva(preguntaActiva?.id);
     setLoadingReset(false);
   };
 
@@ -64,9 +72,13 @@ export default function Banner() {
     const getCurrentCountData = await getCurrentCount();
 
     if (getCurrentCountData === 3) {
+      await pause();
+      await actualizarTimer(false);
       await resetCounter();
+      await limpiarRespuestas();
       await removeAllActiveUsersAndMarkAsPlayed();
       await actualizarEstadoJuego(false);
+      await cambiarPreguntaActiva(preguntaActiva?.id);
       setLoading(false);
       return;
     }
@@ -78,6 +90,7 @@ export default function Banner() {
     } else {
       if (!preguntaActiva) return;
       await cambiarPreguntaActiva(preguntaActiva?.id);
+      await limpiarRespuestas();
       await incrementCounter();
     }
     setLoading(false);

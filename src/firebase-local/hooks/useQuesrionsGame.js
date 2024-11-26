@@ -28,7 +28,7 @@ const useQuestionsCounter = () => {
         if (doc.exists()) {
           setCounter(doc.data().count || 0);
         } else {
-          setCounter(0);
+          setCounter(1);
         }
         setLoading(false);
       },
@@ -50,7 +50,7 @@ const useQuestionsCounter = () => {
     try {
       const counterRef = doc(db, COUNTER_PATH, COUNTER_DOC_ID);
       await setDoc(counterRef, {
-        count: 0,
+        count: 1,
         lastUpdated: new Date().toISOString(),
       });
       return true;
@@ -72,11 +72,11 @@ const useQuestionsCounter = () => {
       if (docSnap.exists()) {
         return docSnap.data().count || 0;
       }
-      return 0;
+      return 1;
     } catch (err) {
       console.error("Error al obtener contador:", err);
       setError(err);
-      return 0;
+      return 1;
     }
   };
 
@@ -98,16 +98,16 @@ const useQuestionsCounter = () => {
         };
       }
 
+      const newCount = currentCount + 1;
+
       await setDoc(
         counterRef,
         {
-          count: increment(1),
+          count: newCount,
           lastUpdated: new Date().toISOString(),
         },
         { merge: true }
       );
-
-      const newCount = await getCurrentCount();
 
       return {
         success: true,
@@ -136,7 +136,7 @@ const useQuestionsCounter = () => {
       await setDoc(
         counterRef,
         {
-          count: 0,
+          count: 1,
           lastUpdated: new Date().toISOString(),
         },
         { merge: true }
